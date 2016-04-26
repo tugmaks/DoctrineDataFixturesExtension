@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension\EventListener;
+namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;

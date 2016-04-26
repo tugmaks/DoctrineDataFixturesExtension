@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension\Service\Backup;
+namespace BehatExtension\DoctrineDataFixturesExtension\Service\Backup;
 
 /**
  * Backup platform interface

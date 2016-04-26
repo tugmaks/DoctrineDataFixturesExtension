@@ -4,11 +4,11 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension\Service;
+namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use VIPSoft\DoctrineDataFixturesExtension\Service\Backup\BackupInterface;
+use BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface;
 
 /**
  * Data Backup Service
@@ -55,7 +55,7 @@ class BackupService
 
     /**
      * @param string                                                                $platformName
-     * @param \VIPSoft\DoctrineDataFixturesExtension\Service\Backup\BackupInterface $backup
+     * @param \BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface $backup
      */
     public function setPlatformBackup($platformName, BackupInterface $backup)
     {
@@ -65,7 +65,7 @@ class BackupService
     /**
      * @param string $name
      *
-     * @return \VIPSoft\DoctrineDataFixturesExtension\Service\Backup\BackupInterface
+     * @return \BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface
      */
     public function getPlatformBackup($name)
     {

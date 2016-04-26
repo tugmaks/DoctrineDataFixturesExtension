@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension;
+namespace BehatExtension\DoctrineDataFixturesExtension;
 
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
@@ -73,7 +73,7 @@ class Extension implements ExtensionInterface
      */
     public function load(ContainerBuilder $container, array $config)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config'));
         $loader->load('services.xml');
 
         if (isset($config['migrations'])) {

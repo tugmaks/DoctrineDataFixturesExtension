@@ -1,16 +1,16 @@
 <?php
 
-namespace VIPSoft\DoctrineDataFixturesExtension\Context\Initializer;
+namespace BehatExtension\DoctrineDataFixturesExtension\Context\Initializer;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Context\Initializer\ContextInitializer;
-use VIPSoft\DoctrineDataFixturesExtension\Context\FixtureServiceAwareContextInterface;
-use VIPSoft\DoctrineDataFixturesExtension\Service\FixtureService;
+use BehatExtension\DoctrineDataFixturesExtension\Context\FixtureServiceAwareContextInterface;
+use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 
 /**
  * Class FixtureServiceAwareInitializer
  *
- * @package VIPSoft\DoctrineDataFixturesExtension\Context\Initializer
+ * @package BehatExtension\DoctrineDataFixturesExtension\Context\Initializer
  */
 class FixtureServiceAwareInitializer implements ContextInitializer
 {
@@ -57,7 +57,7 @@ class FixtureServiceAwareInitializer implements ContextInitializer
             return false;
         }
 
-        if (! in_array('VIPSoft\DoctrineDataFixturesExtension\Context\ReferenceDictionary', $refl->getTraitNames())) {
+        if (! in_array('BehatExtension\DoctrineDataFixturesExtension\Context\ReferenceDictionary', $refl->getTraitNames())) {
             return false;
         }
 

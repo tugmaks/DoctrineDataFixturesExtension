@@ -4,12 +4,12 @@
     xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
 
     <parameters>
-        <parameter key="behat.doctrine_data_fixtures.service.hook_listener.class">VIPSoft\DoctrineDataFixturesExtension\EventListener\HookListener</parameter>
-        <parameter key="behat.doctrine_data_fixtures.service.fixture_loader.class">VIPSoft\DoctrineDataFixturesExtension\Service\FixtureService</parameter>
-        <parameter key="behat.doctrine_data_fixtures.initializer.fixture_service_aware.class">VIPSoft\DoctrineDataFixturesExtension\Context\Initializer\FixtureServiceAwareInitializer</parameter>
-        <parameter key="behat.doctrine_data_fixtures.service.backup.class">VIPSoft\DoctrineDataFixturesExtension\Service\BackupService</parameter>
-        <parameter key="behat.doctrine_data_fixtures.service.backup_mysql.class">VIPSoft\DoctrineDataFixturesExtension\Service\Backup\MysqlDumpBackup</parameter>
-        <parameter key="behat.doctrine_data_fixtures.service.backup_sqlite.class">VIPSoft\DoctrineDataFixturesExtension\Service\Backup\SqliteCopyBackup</parameter>
+        <parameter key="behat.doctrine_data_fixtures.service.hook_listener.class">BehatExtension\DoctrineDataFixturesExtension\EventListener\HookListener</parameter>
+        <parameter key="behat.doctrine_data_fixtures.service.fixture_loader.class">BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService</parameter>
+        <parameter key="behat.doctrine_data_fixtures.initializer.fixture_service_aware.class">BehatExtension\DoctrineDataFixturesExtension\Context\Initializer\FixtureServiceAwareInitializer</parameter>
+        <parameter key="behat.doctrine_data_fixtures.service.backup.class">BehatExtension\DoctrineDataFixturesExtension\Service\BackupService</parameter>
+        <parameter key="behat.doctrine_data_fixtures.service.backup_mysql.class">BehatExtension\DoctrineDataFixturesExtension\Service\Backup\MysqlDumpBackup</parameter>
+        <parameter key="behat.doctrine_data_fixtures.service.backup_sqlite.class">BehatExtension\DoctrineDataFixturesExtension\Service\Backup\SqliteCopyBackup</parameter>
         <parameter key="behat.doctrine_data_fixtures.service.backup_mysql.mysql_bin">mysql</parameter>
         <parameter key="behat.doctrine_data_fixtures.service.backup_mysql.mysqldump_bin">mysqldump</parameter>
     </parameters>

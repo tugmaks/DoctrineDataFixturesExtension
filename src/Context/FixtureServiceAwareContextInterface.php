@@ -1,13 +1,13 @@
 <?php
 
-namespace VIPSoft\DoctrineDataFixturesExtension\Context;
+namespace BehatExtension\DoctrineDataFixturesExtension\Context;
 
-use VIPSoft\DoctrineDataFixturesExtension\Service\FixtureService;
+use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 
 /**
  * Interface FixtureServiceAwareContextInterface
  *
- * @package VIPSoft\DoctrineDataFixturesExtension\Context
+ * @package BehatExtension\DoctrineDataFixturesExtension\Context
  */
 interface FixtureServiceAwareContextInterface
 {

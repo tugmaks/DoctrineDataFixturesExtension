@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension\EventListener;
+namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
 use Behat\Behat\EventDispatcher\Event\FeatureTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
@@ -58,7 +58,7 @@ class HookListener implements EventSubscriberInterface
     /**
      * Set fixture service
      *
-     * @param \VIPSoft\DoctrineDataFixturesExtension\Service\FixtureService $service
+     * @param \BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService $service
      */
     public function setFixtureService($service)
     {

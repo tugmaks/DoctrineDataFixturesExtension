@@ -4,7 +4,7 @@
  * @license MIT
  */
 
-namespace VIPSoft\DoctrineDataFixturesExtension\Service;
+namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
 use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DoctrineFixturesLoader;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
@@ -20,7 +20,7 @@ use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoa
 use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as SymfonyFixturesLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use VIPSoft\DoctrineDataFixturesExtension\EventListener\PlatformListener;
+use BehatExtension\DoctrineDataFixturesExtension\EventListener\PlatformListener;
 
 /**
  * Data Fixture Service
