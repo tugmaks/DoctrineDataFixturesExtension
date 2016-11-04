@@ -3,18 +3,17 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\Service\Backup;
 
 /**
- * Backup platform interface
+ * Backup platform interface.
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 interface BackupInterface
 {
     /**
-     * Create a backup file for the given database
+     * Create a backup file for the given database.
      *
      * @param string $database
      * @param string $file
@@ -23,7 +22,7 @@ interface BackupInterface
     public function create($database, $file, array $params);
 
     /**
-     * Restore the backup file into the given database
+     * Restore the backup file into the given database.
      *
      * @param string $database
      * @param string $file

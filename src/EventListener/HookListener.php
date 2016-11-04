@@ -3,17 +3,16 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
+use Behat\Behat\EventDispatcher\Event\ExampleTested;
 use Behat\Behat\EventDispatcher\Event\FeatureTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
-use Behat\Behat\EventDispatcher\Event\ExampleTested;
 use Behat\Testwork\EventDispatcher\Event\ExerciseCompleted;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Hook listener
+ * Hook listener.
  *
  * @author Anthon Pang <apang@softwaredevelopment.ca>
  */
@@ -30,7 +29,7 @@ class HookListener implements EventSubscriberInterface
     private $fixtureService;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param string $lifetime
      */
@@ -44,7 +43,7 @@ class HookListener implements EventSubscriberInterface
      */
     public static function getSubscribedEvents()
     {
-        return array(
+        return [
             ExerciseCompleted::BEFORE => 'beforeExercise',
             FeatureTested::BEFORE     => 'beforeFeature',
             FeatureTested::AFTER      => 'afterFeature',
@@ -52,11 +51,11 @@ class HookListener implements EventSubscriberInterface
             ScenarioTested::BEFORE    => 'beforeScenario',
             ExampleTested::AFTER      => 'afterScenario',
             ScenarioTested::AFTER     => 'afterScenario',
-        );
+        ];
     }
 
     /**
-     * Set fixture service
+     * Set fixture service.
      *
      * @param \BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService $service
      */

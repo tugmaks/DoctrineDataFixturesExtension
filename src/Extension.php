@@ -3,7 +3,6 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension;
 
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
@@ -29,8 +28,8 @@ class Extension implements ExtensionInterface
     }
 
     /**
-      * {@inheritdoc}
-      */
+     * {@inheritdoc}
+     */
     public function initialize(ExtensionManager $extensionManager)
     {
     }
@@ -58,7 +57,7 @@ class Extension implements ExtensionInterface
                 ->scalarNode('lifetime')
                     ->defaultValue('feature')
                     ->validate()
-                        ->ifNotInArray(array('feature', 'scenario'))
+                        ->ifNotInArray(['feature', 'scenario'])
                         ->thenInvalid('Invalid fixtures lifetime "%s"')
                     ->end()
                 ->end()
@@ -73,14 +72,14 @@ class Extension implements ExtensionInterface
      */
     public function load(ContainerBuilder $container, array $config)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__ . '/Resources/config'));
+        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
         $loader->load('services.xml');
 
         if (isset($config['migrations'])) {
             $config['migrations'] = (array) $config['migrations'];
 
-            if ( ! class_exists('Doctrine\DBAL\Migrations\Migration')) {
-               throw new \RuntimeException('Configuration requires doctrine/migrations package');
+            if (!class_exists('Doctrine\DBAL\Migrations\Migration')) {
+                throw new \RuntimeException('Configuration requires doctrine/migrations package');
             }
         }
 

@@ -3,9 +3,9 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
+use BehatExtension\DoctrineDataFixturesExtension\EventListener\PlatformListener;
 use Doctrine\Bundle\FixturesBundle\Common\DataFixtures\Loader as DoctrineFixturesLoader;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -20,10 +20,9 @@ use Symfony\Bridge\Doctrine\DataFixtures\ContainerAwareLoader as DataFixturesLoa
 use Symfony\Bundle\DoctrineFixturesBundle\Common\DataFixtures\Loader as SymfonyFixturesLoader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\Kernel;
-use BehatExtension\DoctrineDataFixturesExtension\EventListener\PlatformListener;
 
 /**
- * Data Fixture Service
+ * Data Fixture Service.
  *
  * @author Anthon Pang <apang@softwaredevelopment.ca>
  */
@@ -46,19 +45,19 @@ class FixtureService
     private $referenceRepository;
 
     /**
-     * Constructor
+     * Constructor.
      *
      * @param \Symfony\Component\DependencyInjection\ContainerInterface $container Service container
      * @param \Symfony\Component\HttpKernel\Kernel                      $kernel    Application kernel
      */
     public function __construct(ContainerInterface $container, Kernel $kernel)
     {
-        $this->autoload    = $container->getParameter('behat.doctrine_data_fixtures.autoload');
-        $this->fixtures    = $container->getParameter('behat.doctrine_data_fixtures.fixtures');
+        $this->autoload = $container->getParameter('behat.doctrine_data_fixtures.autoload');
+        $this->fixtures = $container->getParameter('behat.doctrine_data_fixtures.fixtures');
         $this->directories = $container->getParameter('behat.doctrine_data_fixtures.directories');
-        $this->migrations  = $container->getParameter('behat.doctrine_data_fixtures.migrations');
-        $this->useBackup   = $container->getParameter('behat.doctrine_data_fixtures.use_backup');
-        $this->kernel      = $kernel;
+        $this->migrations = $container->getParameter('behat.doctrine_data_fixtures.migrations');
+        $this->useBackup = $container->getParameter('behat.doctrine_data_fixtures.use_backup');
+        $this->kernel = $kernel;
 
         if ($this->useBackup) {
             $this->backupService = $container->get('behat.doctrine_data_fixtures.service.backup');
@@ -73,7 +72,7 @@ class FixtureService
      */
     public function getReferenceRepository()
     {
-        if ( ! $this->referenceRepository) {
+        if (!$this->referenceRepository) {
             $this->referenceRepository = new ProxyReferenceRepository($this->entityManager);
         }
 
@@ -81,11 +80,11 @@ class FixtureService
     }
 
     /**
-     * Lazy init
+     * Lazy init.
      */
     private function init()
     {
-        $this->listener      = new PlatformListener();
+        $this->listener = new PlatformListener();
         $this->entityManager = $this->kernel->getContainer()->get('doctrine')->getManager();
 
         $this->entityManager->getEventManager()
@@ -93,7 +92,7 @@ class FixtureService
     }
 
     /**
-     * Retrieve Data fixtures loader
+     * Retrieve Data fixtures loader.
      *
      * @return mixed
      */
@@ -116,7 +115,7 @@ class FixtureService
     }
 
     /**
-     * Calculate hash on data fixture class names, class file names and modification timestamps
+     * Calculate hash on data fixture class names, class file names and modification timestamps.
      *
      * @param array|null $migrations
      * @param array      $fixtures
@@ -126,27 +125,27 @@ class FixtureService
     private function generateHash($migrations, $fixtures)
     {
         if ($migrations) {
-            array_walk($migrations, function (& $migration) {
-                $migration .= '@' . filemtime($migration);
+            array_walk($migrations, function (&$migration) {
+                $migration .= '@'.filemtime($migration);
             });
         }
 
         $classNames = array_map('get_class', $fixtures);
 
-        foreach ($classNames as & $className) {
-            $class    = new \ReflectionClass($className);
+        foreach ($classNames as &$className) {
+            $class = new \ReflectionClass($className);
             $fileName = $class->getFileName();
 
-            $className .= ':' . $fileName . '@' . filemtime($fileName);
+            $className .= ':'.$fileName.'@'.filemtime($fileName);
         }
 
         sort($classNames);
 
-        return sha1(serialize(array($migrations, $classNames)));
+        return sha1(serialize([$migrations, $classNames]));
     }
 
     /**
-     * Get bundle fixture directories
+     * Get bundle fixture directories.
      *
      * @return array Array of directories
      */
@@ -155,7 +154,7 @@ class FixtureService
         return array_filter(
             array_map(
                 function ($bundle) {
-                    $path = $bundle->getPath() . '/DataFixtures/ORM';
+                    $path = $bundle->getPath().'/DataFixtures/ORM';
 
                     return is_dir($path) ? $path : null;
                 },
@@ -165,7 +164,7 @@ class FixtureService
     }
 
     /**
-     * Fetch fixtures from directories
+     * Fetch fixtures from directories.
      *
      * @param array $directoryNames
      */
@@ -201,7 +200,7 @@ class FixtureService
     }
 
     /**
-     * Fetch fixtures from classes
+     * Fetch fixtures from classes.
      *
      * @param array $classNames
      */
@@ -209,17 +208,17 @@ class FixtureService
     {
         foreach ($classNames as $className) {
             if (substr($className, 0, 1) !== '\\') {
-                $className = '\\' . $className;
+                $className = '\\'.$className;
             }
 
-            if ( ! class_exists($className, false)) {
+            if (!class_exists($className, false)) {
                 $this->loadFixtureClass($className);
             }
         }
     }
 
     /**
-     * Fetch fixtures
+     * Fetch fixtures.
      *
      * @return array
      */
@@ -227,17 +226,17 @@ class FixtureService
     {
         $this->loader = $this->getFixtureLoader();
 
-        $bundleDirectories = $this->autoload ? $this->getBundleFixtureDirectories() : array();
+        $bundleDirectories = $this->autoload ? $this->getBundleFixtureDirectories() : [];
 
         $this->fetchFixturesFromDirectories($bundleDirectories);
-        $this->fetchFixturesFromDirectories($this->directories ?: array());
-        $this->fetchFixturesFromClasses($this->fixtures ?: array());
+        $this->fetchFixturesFromDirectories($this->directories ?: []);
+        $this->fetchFixturesFromClasses($this->fixtures ?: []);
 
         return $this->loader->getFixtures();
     }
 
     /**
-     * Fetch SQL migrations
+     * Fetch SQL migrations.
      *
      * @see https://github.com/doctrine/migrations/pull/162
      *
@@ -245,23 +244,23 @@ class FixtureService
      */
     private function fetchMigrations()
     {
-        if ( ! isset($this->migrations)) {
-            return null;
+        if (!isset($this->migrations)) {
+            return;
         }
 
         if (empty($this->migrations)) {
-            return array();
+            return [];
         }
 
-        $migrations = array();
+        $migrations = [];
         $connection = $this->entityManager->getConnection();
-        $driver     = $connection->getDatabasePlatform()->getName();
+        $driver = $connection->getDatabasePlatform()->getName();
 
         foreach ($this->migrations as $migration) {
-            $files = glob($migration . '/*.sql');
+            $files = glob($migration.'/*.sql');
 
             if (empty($files)) {
-                $files = glob($migration . '/' . $driver . '/*.sql');
+                $files = glob($migration.'/'.$driver.'/*.sql');
 
                 if (empty($files)) {
                     continue;
@@ -285,7 +284,7 @@ class FixtureService
     }
 
     /**
-     * Dispatch event
+     * Dispatch event.
      *
      * @param \Doctrine\ORM\EntityManager $em    Entity manager
      * @param string                      $event Event name
@@ -299,7 +298,7 @@ class FixtureService
     }
 
     /**
-     * Load fixtures into database
+     * Load fixtures into database.
      */
     private function loadFixtures()
     {
@@ -313,7 +312,7 @@ class FixtureService
         $executor = new ORMExecutor($em, $purger);
         $executor->setReferenceRepository($this->getReferenceRepository());
 
-        if ( ! $this->useBackup) {
+        if (!$this->useBackup) {
             $executor->purge();
         }
 
@@ -325,20 +324,20 @@ class FixtureService
     }
 
     /**
-     * Run migrations
+     * Run migrations.
      */
     private function runMigrations()
     {
-        if ( ! isset($this->migrations)) {
+        if (!isset($this->migrations)) {
             return;
         }
 
         $connection = $this->entityManager->getConnection();
-        $container  = $this->kernel->getContainer();
-        $namespace  = $container->getParameter('doctrine_migrations.namespace');
+        $container = $this->kernel->getContainer();
+        $namespace = $container->getParameter('doctrine_migrations.namespace');
 
         if ($namespace) {
-            $directory    = $container->getParameter('doctrine_migrations.dir_name');
+            $directory = $container->getParameter('doctrine_migrations.dir_name');
             $outputWriter = new OutputWriter(
                 function () {
                 }
@@ -363,11 +362,11 @@ class FixtureService
     }
 
     /**
-     * Create database using doctrine schema tool
+     * Create database using doctrine schema tool.
      */
     private function createDatabase()
     {
-        $em       = $this->entityManager;
+        $em = $this->entityManager;
         $metadata = $em->getMetadataFactory()->getAllMetadata();
 
         $schemaTool = new SchemaTool($em);
@@ -375,7 +374,7 @@ class FixtureService
     }
 
     /**
-     * Drop database using doctrine schema tool
+     * Drop database using doctrine schema tool.
      */
     private function dropDatabase()
     {
@@ -384,22 +383,22 @@ class FixtureService
     }
 
     /**
-     * Cache data fixtures
+     * Cache data fixtures.
      */
     public function cacheFixtures()
     {
         $this->init();
 
         $this->migrations = $this->fetchMigrations();
-        $this->fixtures   = $this->fetchFixtures();
+        $this->fixtures = $this->fetchFixtures();
 
-        if ($this->useBackup && ! $this->hasBackup()) {
+        if ($this->useBackup && !$this->hasBackup()) {
             $this->dropDatabase();
         }
     }
 
     /**
-     * Get backup file path
+     * Get backup file path.
      *
      * @return string
      */
@@ -409,7 +408,7 @@ class FixtureService
     }
 
     /**
-     * Check if there is a backup
+     * Check if there is a backup.
      *
      * @return void
      */
@@ -419,33 +418,33 @@ class FixtureService
     }
 
     /**
-     * Create a backup for the current fixtures / migrations
+     * Create a backup for the current fixtures / migrations.
      */
     private function createBackup()
     {
-        $hash       = $this->getHash();
+        $hash = $this->getHash();
         $connection = $this->entityManager->getConnection();
 
         $this->backupService->createBackup($connection, $hash);
     }
 
     /**
-     * Restore a backup for the current fixtures / migrations
+     * Restore a backup for the current fixtures / migrations.
      */
     private function restoreBackup()
     {
-        $hash       = $this->getHash();
+        $hash = $this->getHash();
         $connection = $this->entityManager->getConnection();
 
         $this->backupService->restoreBackup($connection, $hash);
     }
 
     /**
-     * Reload data fixtures
+     * Reload data fixtures.
      */
     public function reloadFixtures()
     {
-        if ( ! $this->useBackup) {
+        if (!$this->useBackup) {
             $this->loadFixtures();
 
             return;
@@ -473,7 +472,7 @@ class FixtureService
     }
 
     /**
-     * Flush entity manager
+     * Flush entity manager.
      */
     public function flush()
     {

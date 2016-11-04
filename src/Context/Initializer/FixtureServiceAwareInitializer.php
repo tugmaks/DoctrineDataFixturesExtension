@@ -8,9 +8,7 @@ use BehatExtension\DoctrineDataFixturesExtension\Context\FixtureServiceAwareCont
 use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 
 /**
- * Class FixtureServiceAwareInitializer
- *
- * @package BehatExtension\DoctrineDataFixturesExtension\Context\Initializer
+ * Class FixtureServiceAwareInitializer.
  */
 class FixtureServiceAwareInitializer implements ContextInitializer
 {
@@ -20,8 +18,7 @@ class FixtureServiceAwareInitializer implements ContextInitializer
     private $fixtureService;
 
     /**
-     * Constructor
-     *
+     * Constructor.
      */
     public function __construct(FixtureService $fixtureService)
     {
@@ -47,21 +44,20 @@ class FixtureServiceAwareInitializer implements ContextInitializer
      *
      * @param Context $context
      *
-     * @return boolean
+     * @return bool
      */
     private function usesReferenceDictionary(Context $context)
     {
         $refl = new \ReflectionObject($context);
 
-        if (! method_exists($refl, 'getTraitNames')) {
+        if (!method_exists($refl, 'getTraitNames')) {
             return false;
         }
 
-        if (! in_array('BehatExtension\DoctrineDataFixturesExtension\Context\ReferenceDictionary', $refl->getTraitNames())) {
+        if (!in_array('BehatExtension\DoctrineDataFixturesExtension\Context\ReferenceDictionary', $refl->getTraitNames())) {
             return false;
         }
 
         return true;
     }
-
 }

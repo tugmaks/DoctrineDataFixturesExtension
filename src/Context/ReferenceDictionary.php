@@ -5,9 +5,7 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Context;
 use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 
 /**
- * Class ReferenceDictionary
- *
- * @package BehatExtension\DoctrineDataFixturesExtension\Context
+ * Class ReferenceDictionary.
  */
 trait ReferenceDictionary
 {
@@ -17,7 +15,7 @@ trait ReferenceDictionary
     private $fixtureService;
 
     /**
-     * Sets the Reference Repository
+     * Sets the Reference Repository.
      *
      * @param FixtureService $service
      */
@@ -27,7 +25,7 @@ trait ReferenceDictionary
     }
 
     /**
-     * Returns the Reference Repository
+     * Returns the Reference Repository.
      *
      * @return FixtureService
      */
@@ -37,9 +35,10 @@ trait ReferenceDictionary
     }
 
     /**
-     * Takes a reference string and returns the entity created in fixtures
+     * Takes a reference string and returns the entity created in fixtures.
      *
      * @param string $reference
+     *
      * @return object
      */
     public function getReference($reference)
@@ -48,9 +47,10 @@ trait ReferenceDictionary
     }
 
     /**
-     * Checks if the reference is known to the Repository
+     * Checks if the reference is known to the Repository.
      *
      * @param string $reference
+     *
      * @return object
      */
     public function hasReference($reference)
