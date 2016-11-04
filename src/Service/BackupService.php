@@ -3,15 +3,13 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Platforms\AbstractPlatform;
 use BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface;
+use Doctrine\DBAL\Connection;
 
 /**
- * Data Backup Service
+ * Data Backup Service.
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
@@ -42,7 +40,7 @@ class BackupService
     {
         foreach ($map as $key => $value) {
             $this->setPlatformBackup($key, $value);
-        };
+        }
     }
 
     /**
@@ -54,7 +52,7 @@ class BackupService
     }
 
     /**
-     * @param string                                                                $platformName
+     * @param string                                                                       $platformName
      * @param \BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface $backup
      */
     public function setPlatformBackup($platformName, BackupInterface $backup)
@@ -69,18 +67,18 @@ class BackupService
      */
     public function getPlatformBackup($name)
     {
-        $map  = $this->getPlatformBackupMap();
+        $map = $this->getPlatformBackupMap();
         $item = isset($map[$name]) ? $map[$name] : null;
 
         if ($item === null) {
-            throw new \RuntimeException('Unsupported platform '. $name);
+            throw new \RuntimeException('Unsupported platform '.$name);
         }
 
         return $item;
     }
 
     /**
-     * Returns absolute path to backup file
+     * Returns absolute path to backup file.
      *
      * @param string $hash
      *
@@ -88,14 +86,15 @@ class BackupService
      */
     public function getBackupFile($hash)
     {
-        return $this->cacheDir . DIRECTORY_SEPARATOR .'test_' . $hash;
+        return $this->cacheDir.DIRECTORY_SEPARATOR.'test_'.$hash;
     }
 
     /**
-     * Check if there is a backup
+     * Check if there is a backup.
+     *
      * @param string $hash
      *
-     * @return boolean
+     * @return bool
      */
     public function hasBackup($hash)
     {
@@ -103,34 +102,34 @@ class BackupService
     }
 
     /**
-     * Create a backup for the given connection / hash
+     * Create a backup for the given connection / hash.
      *
      * @param \Doctrine\DBAL\Connection $connection
      * @param string                    $hash
      */
     public function createBackup(Connection $connection, $hash)
     {
-        $platform     = $connection->getDatabasePlatform();
-        $filename     = $this->getBackupFile($hash);
-        $database     = $connection->getDatabase();
-        $params       = $connection->getParams();
+        $platform = $connection->getDatabasePlatform();
+        $filename = $this->getBackupFile($hash);
+        $database = $connection->getDatabase();
+        $params = $connection->getParams();
         $platformName = $platform->getName();
 
         $this->getPlatformBackup($platformName)->create($database, $filename, $params);
     }
 
     /**
-     * Restore the backup for the given connection / hash
+     * Restore the backup for the given connection / hash.
      *
      * @param \Doctrine\DBAL\Connection $connection
      * @param string                    $hash
      */
     public function restoreBackup(Connection $connection, $hash)
     {
-        $platform     = $connection->getDatabasePlatform();
-        $filename     = $this->getBackupFile($hash);
-        $database     = $connection->getDatabase();
-        $params       = $connection->getParams();
+        $platform = $connection->getDatabasePlatform();
+        $filename = $this->getBackupFile($hash);
+        $database = $connection->getDatabase();
+        $params = $connection->getParams();
         $platformName = $platform->getName();
 
         $this->getPlatformBackup($platformName)->restore($database, $filename, $params);

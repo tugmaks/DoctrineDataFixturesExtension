@@ -3,18 +3,17 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\Service\Backup;
 
 /**
- * Sqlite copy backup
+ * Sqlite copy backup.
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
 class SqliteCopyBackup implements BackupInterface
 {
     /**
-     * Get path to .db file
+     * Get path to .db file.
      *
      * @param array $params
      *
@@ -22,8 +21,8 @@ class SqliteCopyBackup implements BackupInterface
      */
     private function getDatabaseFile(array $params)
     {
-        if ( ! isset($params['path'])) {
-            throw new \RuntimeException("Invalid sqlite path config");
+        if (!isset($params['path'])) {
+            throw new \RuntimeException('Invalid sqlite path config');
         }
 
         return $params['path'];
@@ -37,7 +36,7 @@ class SqliteCopyBackup implements BackupInterface
      */
     public function copy($source, $dest)
     {
-        if ( ! copy($source, $dest)) {
+        if (!copy($source, $dest)) {
             throw new \RuntimeException("Unable to copy '$source' to '$dest'");
         }
     }

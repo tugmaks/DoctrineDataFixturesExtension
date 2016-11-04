@@ -3,7 +3,6 @@
  * @copyright 2014 Anthon Pang
  * @license MIT
  */
-
 namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
 use Doctrine\Common\EventSubscriber;
@@ -11,7 +10,7 @@ use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
 
 /**
- * Platform listener
+ * Platform listener.
  *
  * @author Anthon Pang <apang@softwaredevelopment.ca>
  */
@@ -22,21 +21,21 @@ class PlatformListener implements EventSubscriber
      */
     public function getSubscribedEvents()
     {
-        return array(
+        return [
             'preTruncate',
             'postTruncate',
-        );
+        ];
     }
 
     /**
-     * Pre-truncate
+     * Pre-truncate.
      *
      * @param \Doctrine\Common\Persistence\Event\LifecycleEventArgs $args
      */
     public function preTruncate(LifecycleEventArgs $args)
     {
         $connection = $args->getObjectManager()->getConnection();
-        $platform   = $connection->getDatabasePlatform();
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof MySqlPlatform) {
             $connection->exec('SET foreign_key_checks = 0;');
@@ -44,14 +43,14 @@ class PlatformListener implements EventSubscriber
     }
 
     /**
-     * Post-truncate
+     * Post-truncate.
      *
      * @param \Doctrine\Common\Persistence\Event\LifecyleEventArgs $args
      */
     public function postTruncate(LifecycleEventArgs $args)
     {
         $connection = $args->getObjectManager()->getConnection();
-        $platform   = $connection->getDatabasePlatform();
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof MySqlPlatform) {
             $connection->exec('SET foreign_key_checks = 1;');
