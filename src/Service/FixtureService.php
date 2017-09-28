@@ -190,7 +190,7 @@ class FixtureService
             return;
         }
 
-        $this->loader->addFixture(new $className());
+        $this->loader->addFixture($fixture);
 
         if ($fixture instanceof DependentFixtureInterface) {
             foreach ($fixture->getDependencies() as $dependency) {
