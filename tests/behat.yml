@@ -1,0 +1,16 @@
+default:
+    formatters:
+        progress:
+            paths: false
+    extensions:
+        Behat\Symfony2Extension: ~
+        BehatExtension\DoctrineDataFixturesExtension\Extension:
+            lifetime: 'scenario'
+            autoload: true
+            use_backup: true
+    suites:
+        fixtures:
+            type: 'symfony_bundle'
+            bundle: 'DemoBundle'
+            contexts:
+                - 'BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Features\Context\FixtureContext'

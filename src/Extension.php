@@ -1,23 +1,34 @@
 <?php
-/**
- * @copyright 2014 Anthon Pang
- * @license MIT
+
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
+
 namespace BehatExtension\DoctrineDataFixturesExtension;
 
 use Behat\Testwork\ServiceContainer\Extension as ExtensionInterface;
 use Behat\Testwork\ServiceContainer\ExtensionManager;
+use BehatExtension\DoctrineDataFixturesExtension\Service\BackupService;
+use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Doctrine data fixtures extension for Behat class.
  *
  * @author Anthon Pang <apang@softwaredevelopment.ca>
  */
-class Extension implements ExtensionInterface
+final class Extension implements ExtensionInterface
 {
     /**
      * {@inheritdoc}
@@ -42,17 +53,25 @@ class Extension implements ExtensionInterface
         $builder
             ->addDefaultsIfNotSet()
             ->children()
-                ->scalarNode('autoload')
-                    ->defaultValue(true)
+                ->booleanNode('autoload')
+                    ->info('When true, the extension will load the data fixtures for all registered bundles')
+                    ->defaultTrue()
                 ->end()
-                ->variableNode('migrations')
-                    ->defaultNull()
+                ->booleanNode('use_backup')
+                    ->info('When true, the extension will backup the database and restore it when needed')
+                    ->defaultTrue()
                 ->end()
                 ->arrayNode('directories')
-                    ->prototype('scalar')->end()
+                    ->defaultValue([])
+                    ->treatFalseLike([])
+                    ->treatNullLike([])
+                    ->scalarPrototype()->end()
                 ->end()
                 ->arrayNode('fixtures')
-                    ->prototype('scalar')->end()
+                    ->defaultValue([])
+                    ->treatFalseLike([])
+                    ->treatNullLike([])
+                    ->scalarPrototype()->end()
                 ->end()
                 ->scalarNode('lifetime')
                     ->defaultValue('feature')
@@ -60,9 +79,6 @@ class Extension implements ExtensionInterface
                         ->ifNotInArray(['feature', 'scenario'])
                         ->thenInvalid('Invalid fixtures lifetime "%s"')
                     ->end()
-                ->end()
-                ->booleanNode('use_backup')
-                    ->defaultValue(true)
                 ->end()
             ->end();
     }
@@ -72,23 +88,18 @@ class Extension implements ExtensionInterface
      */
     public function load(ContainerBuilder $container, array $config)
     {
-        $loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
-        $loader->load('services.xml');
+        $loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
+        $loader->load('services.php');
 
-        if (isset($config['migrations'])) {
-            $config['migrations'] = (array) $config['migrations'];
-
-            if (!class_exists('Doctrine\DBAL\Migrations\Migration')) {
-                throw new \RuntimeException('Configuration requires doctrine/migrations package');
-            }
+        $container->setParameter('behat.doctrine_data_fixtures.use_backup', $config['use_backup']);
+        if ($config['use_backup']) {
+            $loader->load('backup.php');
         }
 
-        $container->setParameter('behat.doctrine_data_fixtures.autoload', $config['autoload']);
-        $container->setParameter('behat.doctrine_data_fixtures.directories', $config['directories']);
-        $container->setParameter('behat.doctrine_data_fixtures.fixtures', $config['fixtures']);
-        $container->setParameter('behat.doctrine_data_fixtures.lifetime', $config['lifetime']);
-        $container->setParameter('behat.doctrine_data_fixtures.migrations', $config['migrations']);
-        $container->setParameter('behat.doctrine_data_fixtures.use_backup', $config['use_backup']);
+        $keys = ['autoload', 'directories', 'fixtures', 'lifetime'];
+        foreach ($keys as $key) {
+            $container->setParameter('behat.doctrine_data_fixtures.'.$key, $config[$key]);
+        }
     }
 
     /**
@@ -96,5 +107,17 @@ class Extension implements ExtensionInterface
      */
     public function process(ContainerBuilder $container)
     {
+        //Backup Services
+        if (!$container->hasDefinition(BackupService::class)) {
+            return;
+        }
+        $backupService = $container->getDefinition(BackupService::class);
+        $taggedServices = $container->findTaggedServiceIds('behat.fixture_extension.backup_service');
+        foreach ($taggedServices as $id => $attributes) {
+            $backupService->addMethodCall('addBackupService', [new Reference($id)]);
+        }
+
+        $fixtureService = $container->getDefinition(FixtureService::class);
+        $fixtureService->addMethodCall('enableBackupSupport', [new Reference(BackupService::class)]);
     }
 }

@@ -1,8 +1,16 @@
 <?php
-/**
- * @copyright 2014 Anthon Pang
- * @license MIT
+
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
+
 namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
 use BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface;
@@ -21,60 +29,52 @@ class BackupService
     private $cacheDir;
 
     /**
-     * @var string
+     * @var BackupInterface[]
      */
     private $platformBackupMap;
 
     /**
      * @param string $cacheDir
+     *
+     * @return void
      */
-    public function setCacheDir($cacheDir)
+    public function setCacheDir(string $cacheDir): void
     {
         $this->cacheDir = $cacheDir;
     }
 
     /**
-     * @param array $map
+     * @param BackupInterface $backup
+     *
+     * @return void
      */
-    public function setPlatformBackupMap(array $map)
+    public function addBackupService(BackupInterface $backup): void
     {
-        foreach ($map as $key => $value) {
-            $this->setPlatformBackup($key, $value);
-        }
-    }
-
-    /**
-     * @return array
-     */
-    public function getPlatformBackupMap()
-    {
-        return $this->platformBackupMap;
-    }
-
-    /**
-     * @param string                                                                       $platformName
-     * @param \BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface $backup
-     */
-    public function setPlatformBackup($platformName, BackupInterface $backup)
-    {
-        $this->platformBackupMap[$platformName] = $backup;
+        $this->platformBackupMap[$backup->name()] = $backup;
     }
 
     /**
      * @param string $name
      *
-     * @return \BehatExtension\DoctrineDataFixturesExtension\Service\Backup\BackupInterface
+     * @return bool
      */
-    public function getPlatformBackup($name)
+    public function hasBackupService(string $name): bool
     {
-        $map = $this->getPlatformBackupMap();
-        $item = isset($map[$name]) ? $map[$name] : null;
+        return array_key_exists($name, $this->platformBackupMap);
+    }
 
-        if ($item === null) {
+    /**
+     * @param string $name
+     *
+     * @return BackupInterface
+     */
+    public function getBackupService(string $name): BackupInterface
+    {
+        if (!$this->hasBackupService($name)) {
             throw new \RuntimeException('Unsupported platform '.$name);
         }
 
-        return $item;
+        return $this->platformBackupMap[$name];
     }
 
     /**
@@ -84,7 +84,7 @@ class BackupService
      *
      * @return string
      */
-    public function getBackupFile($hash)
+    public function getBackupFile(string $hash): string
     {
         return $this->cacheDir.DIRECTORY_SEPARATOR.'test_'.$hash;
     }
@@ -96,7 +96,7 @@ class BackupService
      *
      * @return bool
      */
-    public function hasBackup($hash)
+    public function hasBackup(string $hash): bool
     {
         return file_exists($this->getBackupFile($hash));
     }
@@ -104,34 +104,36 @@ class BackupService
     /**
      * Create a backup for the given connection / hash.
      *
-     * @param \Doctrine\DBAL\Connection $connection
-     * @param string                    $hash
+     * @param Connection $connection
+     * @param string     $hash
+     *
+     * @return void
      */
-    public function createBackup(Connection $connection, $hash)
+    public function createBackup(Connection $connection, string $hash): void
     {
-        $platform = $connection->getDatabasePlatform();
+        $platformName = $connection->getDatabasePlatform()->getName();
         $filename = $this->getBackupFile($hash);
         $database = $connection->getDatabase();
         $params = $connection->getParams();
-        $platformName = $platform->getName();
 
-        $this->getPlatformBackup($platformName)->create($database, $filename, $params);
+        $this->getBackupService($platformName)->create($database, $filename, $params);
     }
 
     /**
      * Restore the backup for the given connection / hash.
      *
-     * @param \Doctrine\DBAL\Connection $connection
-     * @param string                    $hash
+     * @param Connection $connection
+     * @param string     $hash
+     *
+     * @return void
      */
-    public function restoreBackup(Connection $connection, $hash)
+    public function restoreBackup(Connection $connection, string $hash): void
     {
-        $platform = $connection->getDatabasePlatform();
+        $platformName = $connection->getDatabasePlatform()->getName();
         $filename = $this->getBackupFile($hash);
         $database = $connection->getDatabase();
         $params = $connection->getParams();
-        $platformName = $platform->getName();
 
-        $this->getPlatformBackup($platformName)->restore($database, $filename, $params);
+        $this->getBackupService($platformName)->restore($database, $filename, $params);
     }
 }

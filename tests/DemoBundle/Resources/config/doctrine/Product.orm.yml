@@ -1,0 +1,10 @@
+BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\Product:
+    type: 'entity'
+    table: 'products'
+    id:
+        name:
+            type: 'string'
+    fields:
+        description:
+            type: 'string'
+            nullable: true

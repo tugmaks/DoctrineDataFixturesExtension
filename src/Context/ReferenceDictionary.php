@@ -1,5 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
+ */
+
 namespace BehatExtension\DoctrineDataFixturesExtension\Context;
 
 use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
@@ -18,8 +29,10 @@ trait ReferenceDictionary
      * Sets the Reference Repository.
      *
      * @param FixtureService $service
+     *
+     * @return void
      */
-    public function setFixtureService(FixtureService $service)
+    public function setFixtureService(FixtureService $service): void
     {
         $this->fixtureService = $service;
     }
@@ -29,7 +42,7 @@ trait ReferenceDictionary
      *
      * @return FixtureService
      */
-    public function getFixtureService()
+    public function getFixtureService(): FixtureService
     {
         return $this->fixtureService;
     }
@@ -51,9 +64,9 @@ trait ReferenceDictionary
      *
      * @param string $reference
      *
-     * @return object
+     * @return bool
      */
-    public function hasReference($reference)
+    public function hasReference($reference): bool
     {
         return $this->fixtureService->getReferenceRepository()->hasReference($reference);
     }

@@ -1,13 +1,22 @@
 <?php
-/**
- * @copyright 2014 Anthon Pang
- * @license MIT
+
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
+
 namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
 use Doctrine\Common\EventSubscriber;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
 use Doctrine\DBAL\Platforms\MySqlPlatform;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * Platform listener.
@@ -30,11 +39,20 @@ class PlatformListener implements EventSubscriber
     /**
      * Pre-truncate.
      *
-     * @param \Doctrine\Common\Persistence\Event\LifecycleEventArgs $args
+     * @param LifecycleEventArgs $args
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @return void
      */
-    public function preTruncate(LifecycleEventArgs $args)
+    public function preTruncate(LifecycleEventArgs $args): void
     {
-        $connection = $args->getObjectManager()->getConnection();
+        $objectManager = $args->getObjectManager();
+        if (!$objectManager instanceof EntityManagerInterface) {
+            throw new \RuntimeException('The object manager is not an entity manager.');
+        }
+
+        $connection = $objectManager->getConnection();
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof MySqlPlatform) {
@@ -45,11 +63,20 @@ class PlatformListener implements EventSubscriber
     /**
      * Post-truncate.
      *
-     * @param \Doctrine\Common\Persistence\Event\LifecyleEventArgs $args
+     * @param LifecycleEventArgs $args
+     *
+     * @throws \Doctrine\DBAL\DBALException
+     *
+     * @return void
      */
-    public function postTruncate(LifecycleEventArgs $args)
+    public function postTruncate(LifecycleEventArgs $args): void
     {
-        $connection = $args->getObjectManager()->getConnection();
+        $objectManager = $args->getObjectManager();
+        if (!$objectManager instanceof EntityManagerInterface) {
+            throw new \RuntimeException('The object manager is not an entity manager.');
+        }
+
+        $connection = $objectManager->getConnection();
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof MySqlPlatform) {

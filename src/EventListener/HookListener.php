@@ -1,14 +1,23 @@
 <?php
-/**
- * @copyright 2014 Anthon Pang
- * @license MIT
+
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
+
 namespace BehatExtension\DoctrineDataFixturesExtension\EventListener;
 
 use Behat\Behat\EventDispatcher\Event\ExampleTested;
 use Behat\Behat\EventDispatcher\Event\FeatureTested;
 use Behat\Behat\EventDispatcher\Event\ScenarioTested;
 use Behat\Testwork\EventDispatcher\Event\ExerciseCompleted;
+use BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -24,7 +33,7 @@ class HookListener implements EventSubscriberInterface
     private $lifetime;
 
     /**
-     * @var object
+     * @var FixtureService
      */
     private $fixtureService;
 
@@ -33,7 +42,7 @@ class HookListener implements EventSubscriberInterface
      *
      * @param string $lifetime
      */
-    public function __construct($lifetime)
+    public function __construct(string $lifetime)
     {
         $this->lifetime = $lifetime;
     }
@@ -57,9 +66,11 @@ class HookListener implements EventSubscriberInterface
     /**
      * Set fixture service.
      *
-     * @param \BehatExtension\DoctrineDataFixturesExtension\Service\FixtureService $service
+     * @param FixtureService $service
+     *
+     * @return void
      */
-    public function setFixtureService($service)
+    public function setFixtureService(FixtureService $service): void
     {
         $this->fixtureService = $service;
     }
@@ -67,71 +78,66 @@ class HookListener implements EventSubscriberInterface
     /**
      * Listens to "exercise.before" event.
      *
-     * @param \Behat\Testwork\Tester\Event\ExerciseCompleted $event
+     * @return void
      */
-    public function beforeExercise(ExerciseCompleted $event)
+    public function beforeExercise(): void
     {
-        $this->fixtureService
-             ->cacheFixtures();
+        $this->fixtureService->cacheFixtures();
     }
 
     /**
      * Listens to "feature.before" event.
      *
-     * @param \Behat\Behat\Tester\Event\FeatureTested $event
+     * @return void
      */
-    public function beforeFeature(FeatureTested $event)
+    public function beforeFeature(): void
     {
         if ('feature' !== $this->lifetime) {
             return;
         }
 
-        $this->fixtureService
-             ->reloadFixtures();
+        $this->fixtureService->reloadFixtures();
     }
 
     /**
      * Listens to "feature.after" event.
      *
-     * @param \Behat\Behat\Tester\Event\FeatureTested $event
+     * @return void
      */
-    public function afterFeature(FeatureTested $event)
+    public function afterFeature(): void
     {
         if ('feature' !== $this->lifetime) {
             return;
         }
 
-        $this->fixtureService
-             ->flush();
+        $this->fixtureService->flush();
     }
 
     /**
      * Listens to "scenario.before" and "outline.example.before" event.
      *
-     * @param \Behat\Behat\Tester\Event\AbstractScenarioTested $event
+     * @return void
      */
-    public function beforeScenario(ScenarioTested $event)
+    public function beforeScenario(): void
     {
         if ('scenario' !== $this->lifetime) {
             return;
         }
 
-        $this->fixtureService
-             ->reloadFixtures();
+        $this->fixtureService->reloadFixtures();
     }
 
     /**
      * Listens to "scenario.after" and "outline.example.after" event.
      *
-     * @param \Behat\Behat\Tester\Event\AbstractScenarioTested $event
+     * @return void
      */
-    public function afterScenario(ScenarioTested $event)
+    public function afterScenario(): void
     {
         if ('scenario' !== $this->lifetime) {
             return;
         }
 
-        $this->fixtureService
-             ->flush();
+        $this->fixtureService->flush();
     }
 }

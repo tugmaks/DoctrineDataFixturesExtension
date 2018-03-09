@@ -1,8 +1,16 @@
 <?php
-/**
- * @copyright 2014 Anthon Pang
- * @license MIT
+
+declare(strict_types=1);
+
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016-2018 Spomky-Labs
+ *
+ * This software may be modified and distributed under the terms
+ * of the MIT license.  See the LICENSE file for details.
  */
+
 namespace BehatExtension\DoctrineDataFixturesExtension\Service\Backup;
 
 /**
@@ -10,8 +18,16 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Service\Backup;
  *
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-class SqliteCopyBackup implements BackupInterface
+final class SqliteCopyBackup implements BackupInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function name(): string
+    {
+        return 'sqlite';
+    }
+
     /**
      * Get path to .db file.
      *
@@ -19,7 +35,7 @@ class SqliteCopyBackup implements BackupInterface
      *
      * @return string
      */
-    private function getDatabaseFile(array $params)
+    private function getDatabaseFile(array $params): string
     {
         if (!isset($params['path'])) {
             throw new \RuntimeException('Invalid sqlite path config');
@@ -34,7 +50,7 @@ class SqliteCopyBackup implements BackupInterface
      * @param string $source
      * @param string $dest
      */
-    public function copy($source, $dest)
+    private function copy(string $source, string $dest)
     {
         if (!copy($source, $dest)) {
             throw new \RuntimeException("Unable to copy '$source' to '$dest'");
@@ -44,7 +60,7 @@ class SqliteCopyBackup implements BackupInterface
     /**
      * {@inheritdoc}
      */
-    public function create($database, $file, array $params)
+    public function create(string $database, string $file, array $params): void
     {
         $this->copy($this->getDatabaseFile($params), $file);
     }
@@ -52,7 +68,7 @@ class SqliteCopyBackup implements BackupInterface
     /**
      * {@inheritdoc}
      */
-    public function restore($database, $file, array $params)
+    public function restore(string $database, string $file, array $params): void
     {
         $this->copy($file, $this->getDatabaseFile($params));
     }
