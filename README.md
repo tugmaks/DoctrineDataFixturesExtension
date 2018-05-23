@@ -5,13 +5,11 @@ The extension increases feature test isolation by reloading ORM data fixtures be
 
 # Installation
 
-## Through Composer
-
 ```sh
 composer require "behat-extension/doctrine-data-fixtures-extension"
 ```
 
-#Configuration
+# Configuration
 
 Activate extension in your **behat.yml** and define any fixtures to be loaded:
 
