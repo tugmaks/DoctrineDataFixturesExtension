@@ -5,13 +5,6 @@ The extension increases feature test isolation by reloading ORM data fixtures be
 
 # Installation
 
-This extension requires:
-
-* Behat 3.0+
-* Mink 1.4+
-* Doctrine ORM 2.x
-* [Symfony2Extension](http://extensions.behat.org/symfony2/)
-
 ## Through Composer
 
 ```sh
