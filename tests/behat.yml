@@ -3,11 +3,19 @@ default:
         progress:
             paths: false
     extensions:
+        AdamQuaile\Behat\CommandRunnerExtension:
+            afterSuite:
+            - rm -rf ./app/cache
+            - rm -rf ./app/logs
+            - rm ./app/sqlite.db.cache
         Behat\Symfony2Extension: ~
         BehatExtension\DoctrineDataFixturesExtension\Extension:
             lifetime: 'scenario'
-            autoload: true
             use_backup: true
+            fixtures:
+                - 'BehatExtension\DoctrineDataFixturesExtension\Tests\Dummy\DummyProductLoader'
+            directories:
+                - './Dummy/Fixtures'
     suites:
         fixtures:
             type: 'symfony_bundle'

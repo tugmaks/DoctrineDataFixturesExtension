@@ -16,7 +16,6 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 use BehatExtension\DoctrineDataFixturesExtension\EventListener\PlatformListener;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
-use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\ProxyReferenceRepository;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 use Doctrine\Common\Persistence\Event\LifecycleEventArgs;
@@ -34,29 +33,8 @@ use Symfony\Component\HttpKernel\Kernel;
  */
 class FixtureService
 {
-    /**
-     * @var Loader
-     */
     private $loader;
 
-    /**
-     * @var bool
-     */
-    private $autoload;
-
-    /**
-     * @var string[]
-     */
-    private $fixtures;
-
-    /**
-     * @var string[]
-     */
-    private $directories;
-
-    /**
-     * @var Kernel
-     */
     private $kernel;
 
     /**
@@ -80,27 +58,22 @@ class FixtureService
     private $referenceRepository;
 
     /**
-     * FixtureService constructor.
-     *
-     * @param Kernel   $kernel
-     * @param bool     $autoload
-     * @param string[] $fixtures
-     * @param string[] $directories
+     * @var string[]
      */
-    public function __construct(Kernel $kernel, bool $autoload, array $fixtures, array $directories)
+    private $classnames;
+    /**
+     * @var string[]
+     */
+    private $directories;
+
+    public function __construct(Kernel $kernel, array $classnames, array $directories)
     {
         $this->kernel = $kernel;
-        $this->autoload = $autoload;
-        $this->fixtures = $fixtures;
+        $this->loader = new Loader($kernel->getContainer());
+        $this->classnames = $classnames;
         $this->directories = $directories;
-        $this->loader = new Loader();
     }
 
-    /**
-     * @param BackupService $backupService
-     *
-     * @return void
-     */
     public function enableBackupSupport(BackupService $backupService): void
     {
         $this->backupService = $backupService;
@@ -109,8 +82,6 @@ class FixtureService
 
     /**
      * Returns the reference repository while loading the fixtures.
-     *
-     * @return ProxyReferenceRepository
      */
     public function getReferenceRepository(): ProxyReferenceRepository
     {
@@ -123,8 +94,6 @@ class FixtureService
 
     /**
      * Lazy init.
-     *
-     * @return void
      */
     private function init(): void
     {
@@ -142,10 +111,6 @@ class FixtureService
 
     /**
      * Calculate hash on data fixture class names, class file names and modification timestamps.
-     *
-     * @throws \ReflectionException
-     *
-     * @return string
      */
     private function getHash(): string
     {
@@ -164,9 +129,44 @@ class FixtureService
     }
 
     /**
+     * Fetch fixtures from Doctrine Fixtures Loader.
+     */
+    private function fetchFixturesFromDoctrineLoader(): void
+    {
+        if (!$this->kernel->getContainer()->has('doctrine.fixtures.loader.alias')) {
+            return;
+        }
+        $doctrineFixtureLoader = $this->kernel->getContainer()->get('doctrine.fixtures.loader.alias');
+        foreach ($doctrineFixtureLoader->getFixtures() as $fixture) {
+            if (!$this->loader->hasFixture($fixture)) {
+                $this->loader->addFixture($fixture);
+            }
+        }
+    }
+
+    /**
+     * Fetch fixtures.
+     */
+    private function fetchFixtures(): array
+    {
+        $this->fetchFixturesFromDoctrineLoader();
+        $this->fetchFixturesFromDirectories($this->directories);
+        $this->fetchFixturesFromClasses($this->classnames);
+
+        return $this->loader->getFixtures();
+    }
+
+    private function dispatchEvent(EntityManager $em, string $event): void
+    {
+        $eventArgs = new LifecycleEventArgs(null, $em);
+
+        $em->getEventManager()->dispatchEvent($event, $eventArgs);
+    }
+
+    /**
      * Get bundle fixture directories.
      *
-     * @return array Array of directories
+     * @return string[] Array of directories
      */
     private function getBundleFixtureDirectories(): array
     {
@@ -185,9 +185,7 @@ class FixtureService
     /**
      * Fetch fixtures from directories.
      *
-     * @param array $directoryNames
-     *
-     * @return void
+     * @param string[] $directoryNames
      */
     private function fetchFixturesFromDirectories(array $directoryNames): void
     {
@@ -197,103 +195,7 @@ class FixtureService
     }
 
     /**
-     * Load a data fixture class.
-     *
-     * @param string $className Class name
-     *
-     * @return void
-     */
-    private function loadFixtureClass(string $className): void
-    {
-        $fixture = new $className();
-
-        if ($this->loader->hasFixture($fixture)) {
-            return;
-        }
-
-        $this->loader->addFixture($fixture);
-
-        if ($fixture instanceof DependentFixtureInterface) {
-            foreach ($fixture->getDependencies() as $dependency) {
-                $this->loadFixtureClass($dependency);
-            }
-        }
-    }
-
-    /**
-     * Fetch fixtures from classes.
-     *
-     * @param array $classNames
-     *
-     * @return void
-     */
-    private function fetchFixturesFromClasses(array $classNames): void
-    {
-        foreach ($classNames as $className) {
-            if (substr($className, 0, 1) !== '\\') {
-                $className = '\\'.$className;
-            }
-
-            if (!class_exists($className, false)) {
-                $this->loadFixtureClass($className);
-            }
-        }
-    }
-
-    /**
-     * Fetch fixtures from Doctrine Fixtures Loader.
-     *
-     * @return void
-     */
-    private function fetchFixturesFromDoctrineLoader(): void
-    {
-        if (!$this->kernel->getContainer()->has('doctrine.fixtures.loader.alias')) {
-            return;
-        }
-        $doctrineFixtureLoader = $this->kernel->getContainer()->get('doctrine.fixtures.loader.alias');
-        foreach ($doctrineFixtureLoader->getFixtures() as $fixture) {
-            if (!$this->loader->hasFixture($fixture)) {
-                $this->loader->addFixture($fixture);
-            }
-        }
-    }
-
-    /**
-     * Fetch fixtures.
-     *
-     * @return array
-     */
-    private function fetchFixtures(): array
-    {
-        $bundleDirectories = $this->autoload ? $this->getBundleFixtureDirectories() : [];
-
-        $this->fetchFixturesFromDirectories($bundleDirectories);
-        $this->fetchFixturesFromDirectories($this->directories);
-        $this->fetchFixturesFromClasses($this->fixtures);
-        $this->fetchFixturesFromDoctrineLoader();
-
-        return $this->loader->getFixtures();
-    }
-
-    /**
-     * Dispatch event.
-     *
-     * @param EntityManager $em    Entity manager
-     * @param string        $event Event name
-     *
-     * @return void
-     */
-    private function dispatchEvent(EntityManager $em, string $event): void
-    {
-        $eventArgs = new LifecycleEventArgs(null, $em);
-
-        $em->getEventManager()->dispatchEvent($event, $eventArgs);
-    }
-
-    /**
      * Load fixtures into database.
-     *
-     * @return void
      */
     private function loadFixtures(): void
     {
@@ -317,11 +219,41 @@ class FixtureService
     }
 
     /**
+     * Fetch fixtures from classes.
+     *
+     * @param string[] $classNames
+     */
+    private function fetchFixturesFromClasses(array $classNames): void
+    {
+        foreach ($classNames as $className) {
+            if ('\\' !== mb_substr($className, 0, 1)) {
+                $className = '\\'.$className;
+            }
+            if (!class_exists($className, false)) {
+                $this->loadFixtureClass($className);
+            }
+        }
+    }
+
+    /**
+     * Load a data fixture class.
+     */
+    private function loadFixtureClass(string $className): void
+    {
+        $fixture = new $className();
+        if ($this->loader->hasFixture($fixture)) {
+            return;
+        }
+        $this->loader->addFixture($fixture);
+        if ($fixture instanceof DependentFixtureInterface) {
+            foreach ($fixture->getDependencies() as $dependency) {
+                $this->loadFixtureClass($dependency);
+            }
+        }
+    }
+
+    /**
      * Create database using doctrine schema tool.
-     *
-     * @throws \Doctrine\ORM\Tools\ToolsException
-     *
-     * @return void
      */
     private function createDatabase(): void
     {
@@ -334,8 +266,6 @@ class FixtureService
 
     /**
      * Drop database using doctrine schema tool.
-     *
-     * @return void
      */
     private function dropDatabase(): void
     {
@@ -345,8 +275,6 @@ class FixtureService
 
     /**
      * Cache data fixtures.
-     *
-     * @return void
      */
     public function cacheFixtures(): void
     {
@@ -360,10 +288,6 @@ class FixtureService
 
     /**
      * Get backup file path.
-     *
-     * @throws \ReflectionException
-     *
-     * @return string
      */
     private function getBackupFile(): string
     {
@@ -372,10 +296,6 @@ class FixtureService
 
     /**
      * Check if there is a backup.
-     *
-     * @throws \ReflectionException
-     *
-     * @return bool
      */
     private function hasBackup(): bool
     {
@@ -388,10 +308,6 @@ class FixtureService
 
     /**
      * Create a backup for the current fixtures.
-     *
-     * @throws \ReflectionException
-     *
-     * @return void
      */
     private function createBackup(): void
     {
@@ -406,10 +322,6 @@ class FixtureService
 
     /**
      * Restore a backup for the current fixtures.
-     *
-     * @throws \ReflectionException
-     *
-     * @return void
      */
     private function restoreBackup(): void
     {
@@ -424,10 +336,6 @@ class FixtureService
 
     /**
      * Reload data fixtures.
-     *
-     * @throws \ReflectionException
-     *
-     * @return void
      */
     public function reloadFixtures(): void
     {
@@ -455,8 +363,6 @@ class FixtureService
 
     /**
      * Flush entity manager.
-     *
-     * @return void
      */
     public function flush(): void
     {
