@@ -1,7 +1,6 @@
 framework:
     secret: 'test_test_test'
     default_locale: en
-    session: ~
     profiler: { only_exceptions: false }
     test: ~
     session:

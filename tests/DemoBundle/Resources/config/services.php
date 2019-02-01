@@ -32,4 +32,9 @@ return function (ContainerConfigurator $container) {
         __DIR__.'/../../DataFixtures/ORM/*'
     )->private();
     $container->set(IsolatedProductLoader::class)->private();
+
+    $container->load(
+        'BehatExtension\\DoctrineDataFixturesExtension\\Tests\\Dummy\\',
+        __DIR__.'/../../../Dummy/*'
+    )->private();
 };

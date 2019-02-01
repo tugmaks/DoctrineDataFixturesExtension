@@ -1,3 +1,4 @@
 /tests/app/cache
 /tests/app/sqlite.db.cache
 /composer.lock
+vendor/

@@ -9,6 +9,14 @@ The extension increases feature test isolation by reloading ORM data fixtures be
 composer require "behat-extension/doctrine-data-fixtures-extension"
 ```
 
+```php
+<?php # config/bundles.php
+return [
+    \BehatExtension\DoctrineDataFixturesExtension\Bundle\BehatDoctrineDataFixturesExtensionBundle::class => ['test' => true],
+];
+```
+**@todo** : flex recipe
+
 # Configuration
 
 Activate extension in your **behat.yml** and define any fixtures to be loaded:
@@ -36,7 +44,7 @@ When **directories** is set, the extension will load the data fixtures globed fr
 Classes MUST not have any constructor arguments (or at least optional).
 If the interface `Symfony\Component\DependencyInjection\ContainerAwareInterface` is implemented, the container is set to the fixture loader.
 
-This extension will also load every fixtures declared as services and tagged with `doctrine.fixture.orm`.
+***/!\\ Using doctrine-fixtures-bundle^3.0, `fixtures` and `directories` config keys are ignored. /!\\***
 
 ```yaml
 # behat.yml

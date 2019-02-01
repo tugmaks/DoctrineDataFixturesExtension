@@ -15,10 +15,12 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\DataFixt
 
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\Product;
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\ProductManager;
+use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Tests\DataFixtures\ProductLoaderWithDependencyInjection;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 
-class AnotherProductLoader extends Fixture
+class AnotherProductLoader extends Fixture implements DependentFixtureInterface
 {
     private $service;
 
@@ -49,6 +51,19 @@ class AnotherProductLoader extends Fixture
                 'name'        => 'Product #10',
                 'description' => 'This is the product number 10',
             ],
+        ];
+    }
+
+    /**
+     * This method must return an array of fixtures classes
+     * on which the implementing class depends on
+     *
+     * @return array
+     */
+    public function getDependencies()
+    {
+        return [
+            ProductLoaderWithDependencyInjection::class
         ];
     }
 }
