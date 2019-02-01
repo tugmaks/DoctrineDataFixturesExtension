@@ -43,6 +43,7 @@
     },
     "extra": {
         "branch-alias": {
+            "v7.0": "7.0.x-dev",
             "v6.0": "6.0.x-dev",
             "v5.0": "5.0.x-dev"
         }
