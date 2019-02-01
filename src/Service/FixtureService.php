@@ -346,49 +346,4 @@ class FixtureService
 
         $this->backupService->restoreBackup($connection, $hash);
     }
-
-    /**
-     * Reload data fixtures.
-     */
-    public function reloadFixtures(): void
-    {
-        if (null === $this->backupService) {
-            $this->dropDatabase();
-            $this->createDatabase();
-            $this->loadFixtures();
-
-            return;
-        }
-
-        if ($this->hasBackup()) {
-            $this->restoreBackup();
-            $this->getReferenceRepository()->load($this->getBackupFile());
-
-            return;
-        }
-
-        $this->dropDatabase();
-        $this->createDatabase();
-        $this->loadFixtures();
-        $this->createBackup();
-        $this->getReferenceRepository()->save($this->getBackupFile());
-    }
-
-    /**
-     * Flush entity manager.
-     */
-    public function flush(): void
-    {
-        $em = $this->entityManager;
-        $em->flush();
-        $em->clear();
-
-        $this->referenceRepository = null;
-
-        $cacheDriver = $em->getMetadataFactory()->getCacheDriver();
-
-        if ($cacheDriver) {
-            $cacheDriver->deleteAll();
-        }
-    }
 }
