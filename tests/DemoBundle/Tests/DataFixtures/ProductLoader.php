@@ -15,7 +15,7 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Tests\Da
 
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\Product;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 
 class ProductLoader extends Fixture
 {

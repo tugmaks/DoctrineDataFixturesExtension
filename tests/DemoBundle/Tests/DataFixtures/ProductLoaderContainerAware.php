@@ -16,7 +16,7 @@ namespace BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Tests\Da
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\Product;
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\ProductManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
