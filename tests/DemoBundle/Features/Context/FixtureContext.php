@@ -13,15 +13,13 @@ declare(strict_types=1);
 
 namespace BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Features\Context;
 
-use Behat\Symfony2Extension\Context\KernelAwareContext;
+use Behat\Behat\Context\Context;
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\ProductManager;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-class FixtureContext implements KernelAwareContext
+class FixtureContext implements Context
 {
-    /**
-     * @var KernelInterface
-     */
+    /** @var KernelInterface */
     private $kernel;
 
     /**
@@ -29,13 +27,7 @@ class FixtureContext implements KernelAwareContext
      */
     private $lines;
 
-    /**
-     * Sets HttpKernel instance.
-     * This method will be automatically called by Symfony2Extension ContextInitializer.
-     *
-     * @param KernelInterface $kernel
-     */
-    public function setKernel(KernelInterface $kernel)
+    public function __construct(KernelInterface $kernel)
     {
         $this->kernel = $kernel;
     }

@@ -27,6 +27,7 @@ final class AppKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
             new BehatExtension\DoctrineDataFixturesExtension\Bundle\BehatDoctrineDataFixturesExtensionBundle(),
+            new FriendsOfBehat\SymfonyExtension\Bundle\FriendsOfBehatSymfonyExtensionBundle(),
         ];
 
         return $bundles;

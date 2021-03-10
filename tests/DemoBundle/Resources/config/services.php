@@ -31,5 +31,10 @@ return function (ContainerConfigurator $container) {
         'BehatExtension\\DoctrineDataFixturesExtension\\Tests\\DemoBundle\\DataFixtures\\ORM\\',
         __DIR__.'/../../DataFixtures/ORM/*'
     )->private();
+
+    $container->load(
+      'BehatExtension\\DoctrineDataFixturesExtension\\Tests\\DemoBundle\\Features\\Context\\',
+      __DIR__.'/../../Features/Context/*'
+    );
     $container->set(IsolatedProductLoader::class)->private();
 };

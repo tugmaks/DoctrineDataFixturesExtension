@@ -8,7 +8,12 @@ default:
             - rm -rf ./app/cache
             - rm -rf ./app/logs
             - rm ./app/sqlite.db.cache
-        Behat\Symfony2Extension: ~
+        FriendsOfBehat\SymfonyExtension:
+            bootstrap: ~
+            kernel:
+                path: app/AppKernel.php
+                class: AppKernel
+                environment: test
         BehatExtension\DoctrineDataFixturesExtension\Extension:
             lifetime: 'scenario'
             use_backup: true
@@ -17,8 +22,7 @@ default:
             directories:
                 - './Dummy/Fixtures'
     suites:
-        fixtures:
-            type: 'symfony_bundle'
-            bundle: 'DemoBundle'
+        default:
             contexts:
-                - 'BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Features\Context\FixtureContext'
+                - BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Features\Context\FixtureContext
+            paths: [ '%paths.base%/DemoBundle/Features' ]
