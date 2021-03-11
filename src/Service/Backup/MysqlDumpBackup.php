@@ -33,7 +33,7 @@ final class MysqlDumpBackup implements BackupInterface
 
     private function runCommand(string $command): ?int
     {
-        $process = new Process($command);
+        $process = Process::fromShellCommandline($command);
 
         $process->run();
 

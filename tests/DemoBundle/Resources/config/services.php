@@ -36,5 +36,10 @@ return function (ContainerConfigurator $container) {
       'BehatExtension\\DoctrineDataFixturesExtension\\Tests\\DemoBundle\\Features\\Context\\',
       __DIR__.'/../../Features/Context/*'
     );
+
+    $container->load(
+      'BehatExtension\\DoctrineDataFixturesExtension\\Tests\\Dummy\\Fixtures\\',
+      __DIR__.'/../../../Dummy/Fixtures/*'
+    );
     $container->set(IsolatedProductLoader::class)->private();
 };

@@ -14,6 +14,7 @@ declare(strict_types=1);
 namespace BehatExtension\DoctrineDataFixturesExtension\Service;
 
 use BehatExtension\DoctrineDataFixturesExtension\EventListener\PlatformListener;
+use Doctrine\Bundle\FixturesBundle\Loader\SymfonyFixturesLoader;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\ProxyReferenceRepository;
@@ -69,7 +70,7 @@ class FixtureService
     public function __construct(Kernel $kernel, array $classnames, array $directories)
     {
         $this->kernel = $kernel;
-        $this->loader = new Loader($kernel->getContainer());
+        $this->loader = new SymfonyFixturesLoader($kernel->getContainer());
         $this->classnames = $classnames;
         $this->directories = $directories;
     }

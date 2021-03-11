@@ -17,29 +17,25 @@ use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\Product
 use BehatExtension\DoctrineDataFixturesExtension\Tests\DemoBundle\Entity\ProductManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DummyProductLoaderFromDirectory extends Fixture implements ContainerAwareInterface
+class DummyProductLoaderFromDirectory extends Fixture
 {
-    private $container;
 
-    public function setContainer(ContainerInterface $container = null)
+    private $productManager;
+
+    public function __construct(ProductManager $productManager)
     {
-        $this->container = $container;
+        $this->productManager = $productManager;
     }
 
     public function load(ObjectManager $manager)
     {
-        /** @var ProductManager $service */
-        $service = $this->container->get(ProductManager::class);
-
-        array_map(function (array $item) use ($service) {
+        array_map(function (array $item) {
             $product = new Product(
                 $item['name'],
                 $item['description']
             );
-            $service->create($product);
+            $this->productManager->create($product);
         }, $this->getData());
     }
 

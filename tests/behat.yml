@@ -1,13 +1,8 @@
 default:
     formatters:
-        progress:
-            paths: false
+        progress: true
+
     extensions:
-        AdamQuaile\Behat\CommandRunnerExtension:
-            afterSuite:
-            - rm -rf ./app/cache
-            - rm -rf ./app/logs
-            - rm ./app/sqlite.db.cache
         FriendsOfBehat\SymfonyExtension:
             bootstrap: ~
             kernel:
