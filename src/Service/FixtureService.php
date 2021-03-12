@@ -210,11 +210,12 @@ class FixtureService
         $executor = new ORMExecutor($em, $purger);
         $executor->setReferenceRepository($this->getReferenceRepository());
 
-        if (null === $this->backupService) {
-            $executor->purge();
-        }
+        //TODO check if needed
+        //if (null === $this->backupService) {
+        //    $executor->purge();
+        //}
 
-        $executor->execute($this->fixtures, true);
+        $executor->execute($this->fixtures);
 
         $this->dispatchEvent($em, 'postTruncate');
     }
@@ -255,6 +256,7 @@ class FixtureService
 
     /**
      * Create database using doctrine schema tool.
+     * @deprecated
      */
     private function createDatabase(): void
     {
@@ -267,6 +269,7 @@ class FixtureService
 
     /**
      * Drop database using doctrine schema tool.
+     * @deprecated
      */
     private function dropDatabase(): void
     {
@@ -341,25 +344,25 @@ class FixtureService
     public function reloadFixtures(): void
     {
         if (null === $this->backupService) {
-            $this->dropDatabase();
-            $this->createDatabase();
+            //$this->dropDatabase();
+            //$this->createDatabase();
             $this->loadFixtures();
 
             return;
         }
 
-        if ($this->hasBackup()) {
-            $this->restoreBackup();
-            $this->getReferenceRepository()->load($this->getBackupFile());
+        //if ($this->hasBackup()) {
+        //    $this->restoreBackup();
+        //    $this->getReferenceRepository()->load($this->getBackupFile());
+        //
+        //    return;
+        //}
 
-            return;
-        }
-
-        $this->dropDatabase();
-        $this->createDatabase();
+        //$this->dropDatabase();
+        //$this->createDatabase();
         $this->loadFixtures();
-        $this->createBackup();
-        $this->getReferenceRepository()->save($this->getBackupFile());
+        //$this->createBackup();
+        //$this->getReferenceRepository()->save($this->getBackupFile());
     }
 
     /**
