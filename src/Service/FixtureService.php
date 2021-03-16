@@ -285,9 +285,10 @@ class FixtureService
         $this->init();
 
         $this->fixtures = $this->fetchFixtures();
-        if (!$this->hasBackup()) {
-            $this->dropDatabase();
-        }
+        //TODO check if realy required
+        //if (!$this->hasBackup()) {
+        //    $this->dropDatabase();
+        //}
     }
 
     /**
